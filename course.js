@@ -1,3 +1,4 @@
+window.PDF_LINKS_ENABLED = false;
 window.COURSE = {
   "title": "Redes neuronales",
   "lessons": [

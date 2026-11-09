@@ -1,6 +1,9 @@
-.venv/
-app_data/
-__pycache__/
-*.pyc
-.pytest_cache/
-*.log
+# Publicar únicamente la página estática desde la raíz.
+# Los PDF, DOCX, datos, programas y carpetas locales quedan excluidos.
+/*
+!/.gitignore
+!/index.html
+!/styles.css
+!/app.js
+!/course.js
+!/.nojekyll

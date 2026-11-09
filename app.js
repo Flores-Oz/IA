@@ -31,7 +31,12 @@
     return course.lessons[0].id;
   };
   let active = fromHash();
-  const sourceLink = source => `/material/${encodeURIComponent(source.document)}#page=${source.pages[0]}`;
+  const sourceLink = source => `material/${encodeURIComponent(source.document)}#page=${source.pages[0]}`;
+  function sourceHTML(source) {
+    const label = `${escape(source.document)} · p. ${source.pages.join(', ')}`;
+    if (window.PDF_LINKS_ENABLED === false) return `<li>${label}</li>`;
+    return `<li><a href="${sourceLink(source)}" target="_blank" rel="noopener">${label}</a></li>`;
+  }
 
   function sectionHTML(section) {
     const paragraphs = (section.paragraphs || []).map(p => `<p>${inline(p)}</p>`).join('');
@@ -58,7 +63,7 @@
     const index = course.lessons.indexOf(lesson);
     document.title = `${lesson.title} · Redes neuronales`;
     document.getElementById('topics').innerHTML = course.lessons.map((item,i)=>`<button class="topic-button" type="button" data-topic="${item.id}" ${item.id===active?'aria-current="page"':''}><span class="topic-number">${String(i+1).padStart(2,'0')}</span><span>${escape(item.shortTitle||item.title)}</span></button>`).join('');
-    root.innerHTML = `<article><div class="lesson-meta"><p class="eyebrow">TEMA ${String(index+1).padStart(2,'0')} DE ${course.lessons.length}</p><a class="jump-link" href="#questions">Ir a las preguntas ↓</a></div><h1>${escape(lesson.title)}</h1><p class="intro">${inline(lesson.intro)}</p>${lesson.sections.map(sectionHTML).join('')}<details class="source-details"><summary>Ver las páginas del material</summary><ul>${lesson.sources.map(source=>`<li><a href="${sourceLink(source)}" target="_blank" rel="noopener">${escape(source.document)} · p. ${source.pages.join(', ')}</a></li>`).join('')}</ul></details><section class="questions" id="questions"><div class="questions-header"><h2>Ahora, compruébalo.</h2><a class="jump-link" href="#lesson">Volver a la explicación ↑</a></div><p class="questions-subtitle">Responde antes de ver la solución. Si te equivocas, lee el porqué y vuelve a intentarlo.</p><div id="question-list">${lesson.questions.map((q,i)=>questionHTML(q,i,lesson)).join('')}</div></section><nav class="lesson-nav" aria-label="Cambiar de tema">${index?`<button class="button secondary" data-topic="${course.lessons[index-1].id}">← ${escape(course.lessons[index-1].shortTitle||course.lessons[index-1].title)}</button>`:'<span></span>'}${index<course.lessons.length-1?`<button class="button secondary" data-topic="${course.lessons[index+1].id}">${escape(course.lessons[index+1].shortTitle||course.lessons[index+1].title)} →</button>`:'<span></span>'}</nav></article>`;
+    root.innerHTML = `<article><div class="lesson-meta"><p class="eyebrow">TEMA ${String(index+1).padStart(2,'0')} DE ${course.lessons.length}</p><a class="jump-link" href="#questions">Ir a las preguntas ↓</a></div><h1>${escape(lesson.title)}</h1><p class="intro">${inline(lesson.intro)}</p>${lesson.sections.map(sectionHTML).join('')}<details class="source-details"><summary>${window.PDF_LINKS_ENABLED === false?'Fuentes del tema':'Ver las páginas del material'}</summary><ul>${lesson.sources.map(sourceHTML).join('')}</ul></details><section class="questions" id="questions"><div class="questions-header"><h2>Ahora, compruébalo.</h2><a class="jump-link" href="#lesson">Volver a la explicación ↑</a></div><p class="questions-subtitle">Responde antes de ver la solución. Si te equivocas, lee el porqué y vuelve a intentarlo.</p><div id="question-list">${lesson.questions.map((q,i)=>questionHTML(q,i,lesson)).join('')}</div></section><nav class="lesson-nav" aria-label="Cambiar de tema">${index?`<button class="button secondary" data-topic="${course.lessons[index-1].id}">← ${escape(course.lessons[index-1].shortTitle||course.lessons[index-1].title)}</button>`:'<span></span>'}${index<course.lessons.length-1?`<button class="button secondary" data-topic="${course.lessons[index+1].id}">${escape(course.lessons[index+1].shortTitle||course.lessons[index+1].title)} →</button>`:'<span></span>'}</nav></article>`;
     if (shouldFocus) {
       document.getElementById('lesson').focus({preventScroll:true});
       window.scrollTo({top:0,behavior:'instant'});
