@@ -1,0 +1,2 @@
+# La página usa HTML, CSS, JavaScript y la biblioteca estándar de Python.
+# No requiere instalar paquetes ni modelos.
